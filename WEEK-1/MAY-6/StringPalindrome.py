@@ -1,9 +1,9 @@
 #This program checks if a string is a palindrome or not.ie the entered string is same when reversed.
 def string_palindrome(s):
     #s is the entered string
-    s=s.lower() #converting the string to lower case
-    s=s.replace(" ","") #removing spaces from the string
-    s=s.replace(",","") #removing commas from the string
+    s=s.lower() #converting the string to lower case 
+    s=s.replace(" ","") #removing spaces from the string (No lemon)
+    s=s.replace(",","") #removing commas from the string (No lemon,no melon)
     reversed_string=s[::-1] #reversing the string
     if s==reversed_string:
         return True #if the string is same when reversed, it is a palindrome
