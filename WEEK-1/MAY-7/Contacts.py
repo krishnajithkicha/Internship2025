@@ -12,8 +12,7 @@ def addcontacts(): #Function add the contact details into the dictionary
 def savecontact(contactbook): #Function to save the contact details into the text file
     f=open("Contact.txt",'a') #opens the file in append mode so that the exiting data is not overwritten
     for key,value in contactbook.items(): 
-        line = "Serial Number: "+str(key)+",Name: "+value['Name']+",Phone: "+str(value['Phone']) +"\n" 
-        f.write(line) #writes the details into the file
+        f.write(f"Serial Number: {key}, Name: {value['Name']}, Phone: {value['Phone']}\n") #writes the details into the file
     f.close()
     print("The contacts are saved into the file successfully")
     try:
