@@ -1,0 +1,16 @@
+ID,Name,Age,Gender,Dept,Yr,Marks,Attend,Passed,ScholarAmt
+S001,Alice,20,Female,Computer Science,2,88.5,92,Yes,1000
+S002,Bob,21,Male,Electrical,3,76,85,Yes,500
+S003,Charlie,19,Male,Mechanical,1,67.5,70,No,0
+S004,Diana,22,Female,Computer Science,4,91,98,Yes,1500
+S005,Eva,20,Female,Civil,2,54,60.5,No,200
+S006,Frank,23,Male,Electrical,4,82,88.5,Yes,800
+S007,Grace,18,Female,Computer Science,1,95,99,Yes,1200
+S008,Harry,21,Male,Civil,3,61,75,No,0
+S009,Ivy,22,Female,Mechanical,4,78,84,Yes,600
+S010,Jack,20,Male,Electrical,2,70,72,Yes,400
+S011,Kate,19,Female,Computer Science,1,92,96.5,Yes,1500
+S012,Leo,22,Male,Civil,4,45,55,No,0
+S013,Maya,20,Female,Mechanical,2,86,89,Yes,900
+S014,Nathan,21,Male,Electrical,3,73.5,78,Yes,500
+S015,Olivia,20,Female,Civil,2,68,74.5,Yes,300
