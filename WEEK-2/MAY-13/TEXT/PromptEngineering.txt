@@ -1,0 +1,9 @@
+Prompt Engineering
+
+Prompt engineering is the process of structuring instructions to produce the best output from an AI model.
+ A prompt is natural language text describing the task, and its quality and structure greatly affect the AI's response. 
+ It involves understanding how models interpret language and tailoring inputs accordingly, such as tone, format, or detail level. 
+ Good prompt engineering can reduce ambiguity and improve consistency, often using examples or structuring the input as a conversation. 
+ The purpose of prompt engineering is to optimize human-AI interaction, and key techniques include clear instructions, examples, chain-of-thought prompting, role playing, system prompts, and prompt chaining. 
+ Benefits include improved accuracy, relevance, enhanced control, reduced bias, and faster development. 
+ Applications include content creation, robotic process automation, data analysis, and customer service.

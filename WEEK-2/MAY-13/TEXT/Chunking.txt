@@ -1,0 +1,11 @@
+Chunking
+
+Chunking is a memory strategy that breaks down large amounts of information into smaller, manageable units or chunks, making it easier to remember, process, and understand. 
+It is particularly useful in AI models with token or character limits and is commonly used in natural language processing tasks like summarization or translation.
+Chunking can be based on characters, words, sentences, or semantic boundaries. 
+A typical strategy is to define a fixed-size window and slide it through the text. 
+Overlapping chunks may preserve context between segments. 
+In AI, chunking is crucial for feeding large documents into models like GPT or Gemini, ensuring smooth handling of long inputs and preventing data loss. 
+Effective chunking often relies on predefined rules or machine learning algorithms to ensure coherence. 
+Chunking improves scalability and efficiency in processing pipelines and can be automated using scripts or specialized libraries. 
+It is not limited to text but can also handle audio, video, and image data.
