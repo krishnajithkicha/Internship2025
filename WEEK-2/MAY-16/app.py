@@ -1,26 +1,26 @@
 import autogen
 
 
-
+#Defining model,apikey and apitype for autogen
 config_list = [
     {'model':'gemini-1.5-flash', 
      "api_type":"google",
      'api_key':'AIzaSyDl7hvmtuosswT62ty3V-SDmrWXAy3Z-pE'}
 ]  
-
+#setting configuration
 llm_config={
     "seed": 42,
     "config_list": config_list,
     "temperature": 0,  #lower the temperature for less creative and less unique replies higher temperature for more creative and unique replies
      
 }
-
+#defining assistant agent for responding
 assistant=autogen.AssistantAgent(
     name="assistant",     #we can also  add more number of agents
     llm_config=llm_config
     #if adding more than one agent we have to define system message to specify the roles
 )
-
+#defininf user proxy for getting user input
 user_proxy=autogen.UserProxyAgent(
     name="user_proxy",
     human_input_mode="TERMINATE",
