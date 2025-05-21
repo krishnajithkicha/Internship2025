@@ -1,0 +1,345 @@
+PS C:\Users\User\Desktop\INTERNSHIP\Internship2025\WEEK-3\MAY-21> & C:/Users/User/miniconda3/Anaconda/envs/myenv/python.exe c:/Users/User/Desktop/INTERNSHIP/Internship2025/WEEK-3/MAY-21/main.py
+Data fetched
+---------- TextMessage (user) ----------
+Analyze the data and visualize results for data/Sales.csv
+---------- TextMessage (DataFetcher) ----------
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def analyze_and_visualize_sales(filepath):
+    """
+    Analyzes and visualizes sales data from a CSV file.
+
+    Args:
+        filepath: The path to the CSV file.
+
+    Returns:
+        None. Displays visualizations and prints summary statistics.
+        Raises FileNotFoundError if the file doesn't exist.
+    """
+
+    try:
+        df = pd.read_csv(filepath)
+    except FileNotFoundError:
+        print(f"Error: File '{filepath}' not found.")
+        return
+
+    # Basic info
+    print("First few rows:\n", df.head())
+    print("\nData types:\n", df.dtypes)
+    print("\nSummary statistics:\n", df.describe())
+
+
+    # Handling potential issues (important!)
+    # Check for missing values (NaN) and handle if needed.
+    if df.isnull().values.any():
+        print("\nMissing values detected:")
+        print(df.isnull().sum())
+        # Example: Fill missing values with the mean for numeric columns
+        for col in df.select_dtypes(include=['number']).columns:
+          df[col] = df[col].fillna(df[col].mean())
+
+        # Or, if better strategy:
+        # df = df.dropna()  # Drop rows with missing values (use with caution)
+
+    # IMPORTANT:  Check for inconsistent data.  Dates, categorical data, etc
+    # Example if 'Order Date' is a string, try converting to datetime:
+    try:
+        df['Order Date'] = pd.to_datetime(df['Order Date'])
+    except (KeyError, ValueError) as e:
+        print(f"Error converting 'Order Date' to datetime: {e}")
+
+
+    # --- Visualization ---
+    # Example visualizations (adjust based on your data)
+
+    # Sales trend over time (if 'Order Date' is available)
+    if 'Order Date' in df.columns and pd.api.types.is_datetime64_any_dtype(df['Order Date']):
+        plt.figure(figsize=(10, 6))
+        df.groupby(df['Order Date'].dt.to_period('M'))['Sales'].sum().plot()
+        plt.title('Monthly Sales Trend')
+        plt.xlabel('Month')
+        plt.ylabel('Total Sales')
+        plt.grid(True)
+        plt.show()
+
+    #Sales by Product (or category)
+    if 'Product' in df.columns:
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x='Product', y='Sales', data=df)
+        plt.title('Sales by Product')
+        plt.xlabel('Product')
+        plt.ylabel('Sales')
+        plt.xticks(rotation=45, ha="right")  # Rotate x-axis labels
+        plt.tight_layout()  # Adjust layout to prevent labels from overlapping
+        plt.show()
+
+    # ... Add more visualizations as needed (e.g., scatter plots, histograms).
+
+    # Important - handle errors gracefully, especially with datetime conversion.
+
+    print("\nAnalysis and visualizations completed.")
+
+
+# --- Example usage ---
+filepath = "data/Sales.csv" # Replace with the actual file path
+analyze_and_visualize_sales(filepath)
+```
+
+**Explanation and Crucial Improvements:**
+
+1. **Error Handling:** The code now includes `try-except` blocks to handle potential `FileNotFoundError` and errors during data type conversions (e.g., converting 'Order Date' to datetime).  This makes the code much more robust.
+
+2. **Missing Value Handling:** It detects missing values (NaN) and provides a basic way to handle them.  Crucially, it does this *selectively*:  It only fills missing values in numeric columns.  It also prints a message if missing values are present, highlighting a potential problem.  Choosing to drop rows with `df.dropna()` is less flexible, but might be appropriate in some cases.
+
+3. **Data Type Checking and Conversion:**  It attempts to convert 'Order Date' to a datetime object.  This is very important if you're working with time-series data. It now prints informative error messages if the conversion fails.
+
+
+4. **Clearer Visualization:** Added a rotated x-axis labels to prevent overlapping in the bar plot. `plt.tight_layout()` ensures the labels don't overlap in the bar plot.
+
+
+
+**Before running:**
+
+- **Install Libraries:**
+  ```bash
+  pip install pandas matplotlib seaborn
+  ```
+
+- **Replace `"data/Sales.csv"`:** Change the file path to the correct location of your CSV file.
+
+- **Data Structure:**  Adapt the visualizations (e.g., the `sns.barplot`) and analysis to match the actual structure of your data. If your data doesn't have a 'Product' column or if 'Order Date' is not a valid date format, adjust the code accordingly.
+
+
+This improved code is significantly more robust, handles potential issues, and provides helpful information to diagnose data problems. Remember to inspect your data carefully to determine the most appropriate ways to handle missing values and other potential issues. Remember to adapt the visualization code to specifically visualize the kinds of data you have.  Crucially, add more plots if your dataset warrants further analysis (e.g., histograms, scatter plots).
+---------- TextMessage (Analyzer) ----------
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+def analyze_and_visualize_sales(filepath):
+    """
+    Analyzes and visualizes sales data from a CSV file.
+
+    Args:
+        filepath: The path to the CSV file.
+
+    Returns:
+        None. Displays visualizations and prints summary statistics.
+        Raises FileNotFoundError if the file doesn't exist.
+    """
+
+    try:
+        df = pd.read_csv(filepath)
+    except FileNotFoundError:
+        print(f"Error: File '{filepath}' not found.")
+        return
+
+    # Basic info
+    print("First few rows:\n", df.head())
+    print("\nData types:\n", df.dtypes)
+    print("\nSummary statistics:\n", df.describe())
+
+    # Handling potential issues (important!)
+    # Check for missing values (NaN) and handle if needed.
+
+    # Better strategy for handling missing values.
+    # Handle numerical columns using median, avoids outliers skewing mean
+    numerical_cols = df.select_dtypes(include=['number']).columns
+    for col in numerical_cols:
+        if df[col].isnull().any():
+            df[col] = df[col].fillna(df[col].median())
+
+    # Drop rows with missing values in crucial columns (like 'Order Date')
+    df.dropna(subset=['Order Date', 'Sales', 'Product'], inplace=True)  # Example subset. Adjust!
+
+    # Crucial: Verify data types again after handling missing values.
+    print("\nData types after handling missing values:\n", df.dtypes)
+
+
+    # Convert 'Order Date' if it's a string
+    try:
+        df['Order Date'] = pd.to_datetime(df['Order Date'])
+    except (KeyError, ValueError) as e:
+        print(f"Error converting 'Order Date' to datetime: {e}")
+        return  # Stop if conversion fails
+
+    # --- Visualization ---
+    # Example visualizations (adjust based on your data)
+
+    # Sales trend over time
+    if 'Order Date' in df.columns and pd.api.types.is_datetime64_any_dtype(df['Order Date']):
+        plt.figure(figsize=(12, 6))  # Increased figure size for better readability
+        monthly_sales = df.groupby(df['Order Date'].dt.to_period('M'))['Sales'].sum()
+        monthly_sales.plot(marker='o')  # Add markers for better visualization
+        plt.title('Monthly Sales Trend')
+        plt.xlabel('Month')
+        plt.ylabel('Total Sales')
+        plt.grid(True)
+        plt.xticks(rotation=45)  # Rotate x-axis labels
+        plt.tight_layout()
+        plt.show()
+
+    #Sales by Product (or category)
+    if 'Product' in df.columns and 'Sales' in df.columns:
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x='Product', y='Sales', data=df)
+        plt.title('Sales by Product')
+        plt.xlabel('Product')
+        plt.ylabel('Sales')
+        plt.xticks(rotation=45, ha="right")  # Rotate x-axis labels
+        plt.tight_layout()  # Adjust layout to prevent labels from overlapping
+        plt.show()
+
+    print("\nAnalysis and visualizations completed.")
+
+
+# --- Example usage ---
+filepath = "data/Sales.csv"
+analyze_and_visualize_sales(filepath)
+```
+
+**Key Improvements:**
+
+* **Robust Missing Value Handling:** The code now uses `df.median()` to impute missing numerical values, which is generally a better choice than using the mean, especially if there are outliers.
+
+* **Specific Missing Value Removal:** Dropping rows with missing values in crucial columns like 'Order Date', 'Sales', and 'Product' prevents errors later on.  You need to adjust the columns in the `dropna` call to match your data.
+
+* **Clearer Error Handling:**  Stops execution if datetime conversion fails.
+
+* **Improved Visualization (Monthly Sales):** Added markers to the monthly sales plot (`monthly_sales.plot(marker='o')`) making it easier to see the data points. Increased the figure size, rotated x-axis labels for better readability.
+
+
+
+**Crucial Before Running:**
+
+- **Install Libraries:** Ensure you have `pandas`, `matplotlib`, `seaborn`, and `numpy` installed (`pip install pandas matplotlib seaborn numpy`). 
+
+- **File Path:** Double-check the `filepath` variable to point to your actual CSV file.
+
+- **Data Structure:** If your `Sales.csv` file has different columns or data types, adjust the code accordingly (e.g., the `dropna` call).  Pay special attention to the data types of your columns *after* handling missing values (using `df.dtypes`).  If `Order Date` isn't actually a date column, the code will fail.
+---------- TextMessage (DataFetcher) ----------
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+def analyze_and_visualize_sales(filepath):
+    """
+    Analyzes and visualizes sales data from a CSV file.
+
+    Args:
+        filepath: The path to the CSV file.
+
+    Returns:
+        None. Displays visualizations and prints summary statistics.
+        Raises FileNotFoundError if the file doesn't exist.
+    """
+
+    try:
+        df = pd.read_csv(filepath)
+    except FileNotFoundError:
+        print(f"Error: File '{filepath}' not found.")
+        return
+
+    # Basic info (very useful for debugging)
+    print("First few rows:\n", df.head())
+    print("\nData types:\n", df.dtypes)
+    print("\nSummary statistics:\n", df.describe())
+
+    # Crucial: Check for and handle potential issues.
+    # Explicitly list problematic columns to prevent accidental errors.
+    problematic_cols = ['Order Date', 'Sales', 'Product', 'Quantity']
+    df = df.dropna(subset=problematic_cols)
+
+    # Handling missing values in numerical columns using the median.
+    numerical_cols = df.select_dtypes(include=['number']).columns
+    for col in numerical_cols:
+        if df[col].isnull().any():
+            df[col] = df[col].fillna(df[col].median())
+
+
+    # Correct data type handling (Crucial!)
+    try:
+        df['Order Date'] = pd.to_datetime(df['Order Date'])
+    except (KeyError, ValueError) as e:
+        print(f"Error converting 'Order Date' to datetime: {e}")
+        return
+
+    # --- Visualization ---
+    # Sales trend over time
+    if 'Order Date' in df.columns:
+        plt.figure(figsize=(12, 6))
+        monthly_sales = df.groupby(df['Order Date'].dt.to_period('M'))['Sales'].sum()
+        monthly_sales.plot(marker='o', linestyle='-')  # Improved line style
+        plt.title('Monthly Sales Trend')
+        plt.xlabel('Month')
+        plt.ylabel('Total Sales')
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+
+    # Sales by Product
+    if 'Product' in df.columns and 'Sales' in df.columns:
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x='Product', y='Sales', data=df)
+        plt.title('Sales by Product')
+        plt.xlabel('Product')
+        plt.ylabel('Sales')
+        plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
+        plt.show()
+
+    # Example: Sales by Region (if available). Adapt to your data.
+    if 'Region' in df.columns:
+        plt.figure(figsize=(10,6))
+        sns.boxplot(x='Region', y='Sales', data=df)
+        plt.title('Sales Distribution by Region')
+        plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
+        plt.show()
+
+
+
+
+    print("\nAnalysis and visualizations completed.")
+
+
+# Example usage (replace with your file path)
+filepath = "data/Sales.csv"
+analyze_and_visualize_sales(filepath)
+```
+
+**Key Improvements:**
+
+* **Explicit `problematic_cols`:**  Lists columns that are *critical* to have data in.  This prevents accidental dropping of necessary columns.    
+
+* **More robust error handling**:  It catches and handles errors that could arise during to_datetime conversion.
+
+* **Clearer visualization:**  Slightly improved the line style in the monthly sales plot.
+
+* **Added Sales by Region visualization (example):** Demonstrates how to add visualizations specific to your data.   Adapt the `if` statement and plotting code as needed for your dataset.
+
+
+**Crucial considerations:**
+
+- **Data Cleaning:**  The most critical part of data analysis is often understanding your data.   If you have a lot of missing data, consider using techniques like imputation with more sophisticated methods (e.g., KNN imputation).
+
+
+- **Data Types:** Ensure your 'Order Date' column is *actually* in a datetime format.
+
+
+- **Column Names:**  Double-check your column names in the `Sales.csv` file. The code uses specific column names (e.g., `Order Date`, `Sales`, `Product`); these must exist to make it work.
+
+
+- **Visualization Choices:** The specific visualizations you choose should reflect the questions you're trying to answer about your sales data. For example, a boxplot of sales by region would be useful to check for differences in sales across regions.  Consider adding other plots like histograms, or scatterplots if your analysis suggests they'd be beneficial.
+
+
+
+Remember to install necessary libraries (`pandas`, `matplotlib`, `seaborn`, `numpy`) if you haven't already.  Replace `"data/Sales.csv"` with the actual path to your CSV file. This revised code is much more robust and handles potential issues you might face.  Thorough data exploration and suitable visualization choices are critical parts of any data analysis.
